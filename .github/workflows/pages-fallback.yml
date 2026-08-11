@@ -79,7 +79,7 @@ jobs:
           import fs from "node:fs";
           const registry = JSON.parse(fs.readFileSync("dist/registry/index.json", "utf8"));
           if (registry.summary?.specifications !== 50) throw new Error("Expected 50 specifications");
-          if (registry.summary?.requirements !== 275) throw new Error("Expected 275 requirements");
+          if (registry.summary?.requirements !== 328) throw new Error("Expected 328 requirements");
           if (!/^[0-9a-f]{40}$/.test(registry.source?.ref || "")) throw new Error("Registry source is not pinned");
           NODE
       - name: Configure Pages
