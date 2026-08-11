@@ -15,13 +15,14 @@ test("builds the Astro service before deploying Netlify output", () => {
 });
 
 test("deploys testing and production from their intended branches", () => {
-  assert.match(workflow, /branches: \[main, production\]/);
-  assert.match(workflow, /github\.ref_name == 'main'[\s\S]*NETLIFY_TESTING_SITE_ID/);
-  assert.match(workflow, /github\.ref_name == 'production'[\s\S]*NETLIFY_PRODUCTION_SITE_ID/);
+  assert.match(workflow, /branches: \[main, testing\]/);
+  assert.match(workflow, /github\.ref_name == 'testing'[\s\S]*NETLIFY_TESTING_SITE_ID/);
+  assert.match(workflow, /github\.ref_name == 'main'[\s\S]*NETLIFY_PRODUCTION_SITE_ID/);
+  assert.doesNotMatch(workflow, /github\.ref_name == 'production'/);
 });
 
 test("publishes production before non-blocking domain correction", () => {
-  const deployIndex = workflow.indexOf("Deploy production to specs.hara-lang.org");
+  const deployIndex = workflow.indexOf("Deploy main to specs.hara-lang.org");
   const domainIndex = workflow.indexOf("Correct the production domain");
 
   assert.ok(deployIndex >= 0);
@@ -43,7 +44,7 @@ test("builds pull-request Pages fallbacks from the proposed merge result", () =>
 });
 
 test("guards project authoring sources without scanning generated registry snapshots", () => {
-  assert.match(projectContract, /branches: \[main, production\]/);
+  assert.match(projectContract, /branches: \[main, testing\]/);
   assert.match(projectContract, /src\/generated\//);
   assert.match(projectContract, /public\/registry\//);
   assert.match(projectContract, /deprecated_tokens/);

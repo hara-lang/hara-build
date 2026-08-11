@@ -2,7 +2,7 @@ name: Deploy specs.hara-lang.org
 
 on:
   push:
-    branches: [main, production]
+    branches: [main, testing]
   workflow_dispatch:
 
 permissions:
@@ -34,22 +34,22 @@ jobs:
       - name: Build the specifications service
         run: npm run build
 
-      - name: Deploy main to specs.testing.hara-lang.org
-        if: github.ref_name == 'main'
-        run: npx --yes netlify-cli deploy --prod --dir dist --message "main ${GITHUB_SHA}"
+      - name: Deploy testing to specs.testing.hara-lang.org
+        if: github.ref_name == 'testing'
+        run: npx --yes netlify-cli deploy --prod --dir dist --message "testing ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
 
-      - name: Deploy production to specs.hara-lang.org
-        if: github.ref_name == 'production'
-        run: npx --yes netlify-cli deploy --prod --dir dist --message "production ${GITHUB_SHA}"
+      - name: Deploy main to specs.hara-lang.org
+        if: github.ref_name == 'main'
+        run: npx --yes netlify-cli deploy --prod --dir dist --message "main ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
 
       - name: Correct the production domain
-        if: github.ref_name == 'production'
+        if: github.ref_name == 'main'
         continue-on-error: true
         run: |
           curl --fail-with-body --silent --show-error \
