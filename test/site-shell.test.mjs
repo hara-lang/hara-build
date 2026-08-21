@@ -3,9 +3,11 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const layout = await readFile(new URL("../src/layouts/AppLayout.astro", import.meta.url), "utf8");
-const shell = await readFile(new URL("../src/styles/shell.css", import.meta.url), "utf8");
+const adoption = await readFile(new URL("../src/styles/v2-adoption.css", import.meta.url), "utf8");
 const config = await readFile(new URL("../astro.config.mjs", import.meta.url), "utf8");
+const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+const acceptedRevision = "a2ab66d0fde79edb1cee46b79528098b3fda68cf";
 
 test("uses the canonical specs domain", () => {
   assert.match(config, /https:\/\/specs\.hara-lang\.org/);
@@ -20,42 +22,49 @@ test("publishes a dedicated maximum-resolution specifications card", () => {
   assert.match(layout, /og:image:height" content="2016"/);
 });
 
-test("keeps the Hara brand and actions at the edges with ecosystem links centred", () => {
-  assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*aria-current="page" aria-disabled="true">Specs[\s\S]*World/);
+test("pins and consumes the accepted shared v2 shell contract", () => {
+  assert.equal(
+    packageJson.dependencies["@hara-lang/visual-language"],
+    `github:hara-lang/visual-language#${acceptedRevision}`
+  );
+  for (const component of ["Shell", "Header", "ContextNav"]) {
+    assert.match(layout, new RegExp(`import ${component} from "@hara-lang/visual-language/astro/v2/${component}\\.astro"`));
+    assert.match(layout, new RegExp(`<${component}`));
+  }
+  assert.match(layout, /@hara-lang\/visual-language\/v2\.css/);
+  assert.match(layout, /body class="hara-v2 specs-product"/);
+  assert.match(layout, /<Shell sidebar=\{false\} aside=\{false\} mainId="content" class="specs-v2-shell">/);
+});
+
+test("keeps ecosystem and workflow destinations distinct and ordered", () => {
+  assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*Specs[\s\S]*World/);
   assert.match(layout, /https:\/\/world\.hara-lang\.org\//);
-  assert.doesNotMatch(layout, />Source<\/a>/);
-  assert.match(shell, /grid-template-columns: minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
-  assert.match(shell, /\.app-header \.brand \{ justify-self: start; \}/);
-  assert.match(shell, /\.header-actions[\s\S]*justify-self: end/);
-  assert.match(shell, /\.app-header \.ecosystem-nav[\s\S]*justify-self: center/);
-});
-
-test("places specifications navigation in a fixed right rail on desktop", () => {
-  assert.match(layout, /class="context-nav"/);
   assert.match(layout, /Overview[\s\S]*Registry[\s\S]*Check[\s\S]*Publish[\s\S]*API/);
-  assert.match(layout, /href="\/developers"/);
-  assert.match(shell, /@media \(min-width: 981px\)/);
-  assert.match(shell, /\.context-nav[\s\S]*position: fixed[\s\S]*right: 0[\s\S]*bottom: 0/);
-  assert.match(shell, /\.context-nav > div[\s\S]*flex-direction: column/);
-  assert.match(shell, /main,[\s\S]*\.app-footer[\s\S]*margin-right: var\(--app-context-width\)/);
+  assert.match(layout, /href: "\/developers"/);
+  assert.match(layout, /label="Specifications workflow navigation"/);
+  assert.doesNotMatch(layout, />Source<\/a>/);
 });
 
-test("uses the central Hara GitHub identity instead of a local OAuth session", () => {
+test("preserves central identity and delegates theme state to the shared toggle", () => {
   assert.match(layout, /data-hara-identity/);
   assert.match(layout, /https:\/\/id\.hara-lang\.org/);
   assert.match(layout, /https:\/\/id\.testing\.hara-lang\.org/);
   assert.match(layout, /identity-client\.js/);
+  assert.match(layout, /<ThemeToggle label="Theme" \/>/);
+  assert.doesNotMatch(layout, /const themeIcons|themeOrder|syncThemeIcon/);
   assert.doesNotMatch(layout, /\/auth\/github\?return_to=/);
   assert.doesNotMatch(layout, /fetch\("\/api\/auth\/session"/);
-  assert.doesNotMatch(layout, /action="\/auth\/logout"/);
   assert.match(readme, /shared GitHub identity/);
 });
 
-test("uses icons only for system, light, and dark theme states", () => {
-  assert.match(layout, /const themeIcons = \{[\s\S]*system:[\s\S]*light:[\s\S]*dark:/);
-  assert.match(layout, /data-hara-theme-icon/);
-  assert.match(shell, /\.app-header \.hara-theme-toggle \[data-hara-theme-label\][\s\S]*position: absolute/);
-  assert.match(shell, /\.app-header \.hara-theme-toggle \[data-hara-theme-icon\] svg/);
+test("the product mapping preserves full-width workflows, touch, focus and reduced motion", () => {
+  assert.match(adoption, /\.specs-v2-shell \.hara-v2-main[\s\S]*padding: 0/);
+  assert.match(adoption, /\.hara-v2-main > \.hara-v2-content[\s\S]*width: 100%/);
+  assert.match(adoption, /\.hara-v2-context-items a[\s\S]*min-height: 44px/);
+  assert.match(adoption, /:focus-visible/);
+  assert.match(adoption, /scroll-margin-top/);
+  assert.match(adoption, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.doesNotMatch(adoption, /--hara-v2-[A-Za-z0-9_-]+\s*:/, "Specs may consume but not redefine protected v2 tokens");
 });
 
 test("identifies Greenways stewardship and the repository licence", () => {
