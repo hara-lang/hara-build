@@ -41,7 +41,11 @@ test("builds pull-request Pages fallbacks from the proposed merge result", () =>
   assert.match(fallback, /\|\| 'main'/);
   assert.doesNotMatch(fallback, /github\.event\.pull_request\.head\.sha/);
   assert.doesNotMatch(fallback, /with:\s*\n\s*ref: main/);
-  assert.match(fallback, /requirements !== 328/);
+  assert.match(fallback, /const generated = JSON\.parse\(fs\.readFileSync\("src\/generated\/registry\.json"/);
+  assert.match(fallback, /const published = JSON\.parse\(fs\.readFileSync\("dist\/registry\/index\.json"/);
+  assert.match(fallback, /published\.summary\?\.\[key\] !== generated\.summary\[key\]/);
+  assert.match(fallback, /published\.source\.ref !== generated\.source\?\.ref/);
+  assert.doesNotMatch(fallback, /(?:specifications|requirements)\s*!==\s*\d+/, "registry growth must not require hard-coded workflow counts");
 });
 
 test("guards project authoring sources without scanning generated registry snapshots", () => {

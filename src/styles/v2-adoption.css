@@ -1,0 +1,103 @@
+/* Product-owned mapping from the shared Hara v2 contract to Specs workflows. */
+
+.specs-product {
+  margin: 0;
+  background: var(--hara-v2-canvas);
+}
+
+.specs-v2-shell .hara-v2-main {
+  min-height: calc(100svh - var(--hara-v2-header-height) - var(--hara-v2-context-height));
+  padding: 0;
+}
+
+.specs-v2-shell .hara-v2-main > .hara-v2-content {
+  width: 100%;
+  max-width: none;
+}
+
+.specs-v2-shell .hara-v2-header-actions > [data-hara-identity] {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.specs-v2-shell .hara-v2-header-actions .hara-theme-toggle,
+.specs-v2-shell .hara-v2-context-items a {
+  min-height: 44px;
+}
+
+.specs-v2-shell .hara-v2-context-items a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.specs-v2-shell [id] {
+  scroll-margin-top: calc(var(--hara-v2-header-height) + var(--hara-v2-context-height) + 1rem);
+}
+
+.specs-product .skip-link {
+  z-index: 100;
+  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--hara-v2-signal) 72%, #0b1726);
+  border-radius: var(--hara-v2-radius);
+  background: var(--hara-v2-signal);
+  clip-path: polygon(var(--hara-v2-cut-small) 0, 100% 0, 100% calc(100% - var(--hara-v2-cut-small)), calc(100% - var(--hara-v2-cut-small)) 100%, 0 100%, 0 var(--hara-v2-cut-small));
+}
+
+.specs-product .button,
+.specs-product .status-pill,
+.specs-product .spec-card,
+.specs-product .metric,
+.specs-product .command,
+.specs-product .registry-toolbar,
+.specs-product .checker-form,
+.specs-product .publisher-form,
+.specs-product input,
+.specs-product select,
+.specs-product textarea {
+  border-radius: var(--hara-v2-radius);
+  box-shadow: none;
+}
+
+.specs-product .button,
+.specs-product .status-pill {
+  clip-path: polygon(var(--hara-v2-cut-small) 0, 100% 0, 100% calc(100% - var(--hara-v2-cut-small)), calc(100% - var(--hara-v2-cut-small)) 100%, 0 100%, 0 var(--hara-v2-cut-small));
+}
+
+.specs-product .button:hover:not(:disabled),
+.specs-product .spec-card:hover {
+  transform: none;
+}
+
+.specs-product .button:focus-visible,
+.specs-product input:focus-visible,
+.specs-product select:focus-visible,
+.specs-product textarea:focus-visible,
+.specs-product .spec-card a:focus-visible {
+  outline: 2px solid var(--hara-v2-signal);
+  outline-offset: 2px;
+}
+
+.specs-product .status-ready { color: var(--hara-v2-success); }
+.specs-product .status-draft { color: var(--hara-v2-warning); }
+
+@media (max-width: 760px) {
+  .specs-v2-shell .hara-v2-header-actions > [data-hara-identity] {
+    max-width: 42vw;
+  }
+
+  .specs-v2-shell .hara-v2-context-inner {
+    padding-inline: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .specs-product *,
+  .specs-product *::before,
+  .specs-product *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
