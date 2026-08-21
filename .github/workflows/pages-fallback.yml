@@ -77,10 +77,22 @@ jobs:
           grep -q 'Discover executable standards' dist/registry/index.html
           node --input-type=module <<'NODE'
           import fs from "node:fs";
-          const registry = JSON.parse(fs.readFileSync("dist/registry/index.json", "utf8"));
-          if (registry.summary?.specifications !== 50) throw new Error("Expected 50 specifications");
-          if (registry.summary?.requirements !== 328) throw new Error("Expected 328 requirements");
-          if (!/^[0-9a-f]{40}$/.test(registry.source?.ref || "")) throw new Error("Registry source is not pinned");
+          const generated = JSON.parse(fs.readFileSync("registry-index.json", "utf8"));
+          const published = JSON.parse(fs.readFileSync("dist/registry/index.json", "utf8"));
+          for (const key of ["specifications", "requirements"]) {
+            if (!Number.isInteger(generated.summary?.[key]) || generated.summary[key] <= 0) {
+              throw new Error(`Generated registry has no valid ${key} count`);
+            }
+            if (published.summary?.[key] !== generated.summary[key]) {
+              throw new Error(`Published ${key} count does not match the generated registry`);
+            }
+          }
+          if (!/^[0-9a-f]{40}$/.test(published.source?.ref || "")) {
+            throw new Error("Registry source is not pinned");
+          }
+          if (published.source.ref !== generated.source?.ref) {
+            throw new Error("Published registry source does not match the generated registry");
+          }
           NODE
       - name: Configure Pages
         if: github.event_name != 'pull_request'
