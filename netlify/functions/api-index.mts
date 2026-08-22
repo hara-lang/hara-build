@@ -30,14 +30,14 @@ export default async (request: Request, context = {}) => {
   return sendJson(request, {
     apiVersion: API_VERSION,
     data: {
-      id: "hara-specs",
-      name: "Hara Specifications API",
+      id: "hara-build",
+      name: "Hara Build API",
       status: "available",
       origin,
       versions: [{ version: API_VERSION, status: "current", url: links.current }],
       authorities: {
         specifications: {
-          service: "hara-lang/hara-specs",
+          service: "hara-lang/hara-build",
           registry: "hara-lang/hara-specs-registry"
         },
         identity: {
@@ -60,5 +60,5 @@ export default async (request: Request, context = {}) => {
 };
 
 export const config = {
-  path: ["/api", "/api/v1", "/.well-known/hara-specs"]
+  path: ["/api", "/api/v1", "/.well-known/hara-build", "/.well-known/hara-specs"]
 };

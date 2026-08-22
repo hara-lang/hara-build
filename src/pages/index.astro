@@ -7,7 +7,7 @@ import registry from "../generated/registry.json";
 
 const featured = registry.specs.slice(0, 6);
 ---
-<AppLayout title="Hara Specs — executable standards" description="A registry, publishing surface, and conformance service for executable Hara specifications.">
+<AppLayout title="Hara Build — developer tools and executable standards" description="Specifications, APIs, runtimes, packages, guides, and evidence for building with Hara.">
   <Motif kind="edge" class="hero">
     <div class="hero-copy">
       <p class="hara-kicker">Registry · checker · attestations</p>
@@ -35,7 +35,7 @@ const featured = registry.specs.slice(0, 6);
     <div>
       <p class="hara-kicker">Repository separation</p>
       <h2>One source of truth. One service surface.</h2>
-      <p>The canonical corpus and package index live in <code>hara-lang/hara-specs-registry</code>. This Netlify application remains in <code>hara-lang/hara-specs</code> and resolves every build to an exact registry commit.</p>
+      <p>The canonical corpus and package index live in <code>hara-lang/hara-specs-registry</code>. Build resolves every service build to an exact registry commit and presents the developer material around it.</p>
     </div>
     <div class="architecture-flow" aria-label="Repository architecture">
       <div><span>01</span><strong>Registry</strong><small>immutable spec packages</small></div>

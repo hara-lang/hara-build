@@ -16,7 +16,7 @@ const migrationUrl = spec.migrationPath ? githubBlobUrl({ repository: registry.s
 const sourceState = materializationLabel(spec);
 const pinned = spec.materialization === "pinned-source";
 ---
-<AppLayout title={`${spec.title} — Hara Specs`} description={spec.summary} canonicalPath={`/specs/${spec.slug}`}>
+<AppLayout title={`${spec.title} — Hara Build`} description={spec.summary} canonicalPath={`/specs/${spec.slug}`}>
   <section class="spec-detail-heading section-shell">
     <div><p class="package-name">{spec.coordinate}</p><h1>{spec.title}</h1><p>{spec.summary}</p></div>
     <div class="spec-detail-state hara-surface"><span class:list={["status-pill", `status-${spec.status}`]}>{spec.status}</span><strong>{spec.version}</strong><small>{spec.requirements} indexed rules</small></div>

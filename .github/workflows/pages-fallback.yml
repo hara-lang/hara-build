@@ -1,4 +1,4 @@
-name: Publish Hara Specs to GitHub Pages
+name: Publish Hara Build to GitHub Pages
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: hara-specs-pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
+  group: hara-build-pages-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: true
 
 jobs:
@@ -114,7 +114,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy current Hara Specs application
+      - name: Deploy current Hara Build application
         id: deployment
         uses: actions/deploy-pages@v4
 
@@ -128,8 +128,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          url="https://specs.hara-lang.org/"
-          body="$RUNNER_TEMP/specs.html"
+          url="https://build.hara-lang.org/"
+          body="$RUNNER_TEMP/build.html"
           for attempt in $(seq 1 12); do
             if curl --fail --silent --show-error --location --max-time 20 "$url" > "$body" && \
                grep -q 'Specifications that can answer' "$body"; then

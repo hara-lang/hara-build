@@ -9,15 +9,15 @@ const packageJson = JSON.parse(await readFile(new URL("../package.json", import.
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
 const acceptedRevision = "a2ab66d0fde79edb1cee46b79528098b3fda68cf";
 
-test("uses the canonical specs domain", () => {
-  assert.match(config, /https:\/\/specs\.hara-lang\.org/);
+test("uses the canonical Build domain", () => {
+  assert.match(config, /https:\/\/build\.hara-lang\.org/);
   assert.doesNotMatch(config, /hara-lang\.io/);
-  assert.match(readme, /specs\.hara-lang\.org/);
+  assert.match(readme, /build\.hara-lang\.org/);
   assert.doesNotMatch(readme, /specs\.hara-lang\.io/);
 });
 
 test("publishes a dedicated maximum-resolution specifications card", () => {
-  assert.match(layout, /og-hara-specs\.jpg/);
+  assert.match(layout, /og-hara-build\.jpg/);
   assert.match(layout, /og:image:width" content="3840"/);
   assert.match(layout, /og:image:height" content="2016"/);
 });
@@ -32,16 +32,16 @@ test("pins and consumes the accepted shared v2 shell contract", () => {
     assert.match(layout, new RegExp(`<${component}`));
   }
   assert.match(layout, /@hara-lang\/visual-language\/v2\.css/);
-  assert.match(layout, /body class="hara-v2 specs-product"/);
-  assert.match(layout, /<Shell sidebar=\{false\} aside=\{false\} mainId="content" class="specs-v2-shell">/);
+  assert.match(layout, /body class="hara-v2 build-product"/);
+  assert.match(layout, /<Shell sidebar=\{false\} aside=\{false\} mainId="content" class="build-v2-shell">/);
 });
 
 test("keeps ecosystem and workflow destinations distinct and ordered", () => {
-  assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*Specs[\s\S]*World/);
-  assert.match(layout, /https:\/\/world\.hara-lang\.org\//);
+  assert.match(layout, /Play[\s\S]*Learn[\s\S]*Build/);
+  assert.match(layout, /https:\/\/learn\.hara-lang\.org\//);
   assert.match(layout, /Overview[\s\S]*Registry[\s\S]*Check[\s\S]*Publish[\s\S]*API/);
   assert.match(layout, /href: "\/developers"/);
-  assert.match(layout, /label="Specifications workflow navigation"/);
+  assert.match(layout, /label="Build workflow navigation"/);
   assert.doesNotMatch(layout, />Source<\/a>/);
 });
 
@@ -58,7 +58,7 @@ test("preserves central identity and delegates theme state to the shared toggle"
 });
 
 test("the product mapping preserves full-width workflows, touch, focus and reduced motion", () => {
-  assert.match(adoption, /\.specs-v2-shell \.hara-v2-main[\s\S]*padding: 0/);
+  assert.match(adoption, /\.build-v2-shell \.hara-v2-main[\s\S]*padding: 0/);
   assert.match(adoption, /\.hara-v2-main > \.hara-v2-content[\s\S]*width: 100%/);
   assert.match(adoption, /\.hara-v2-context-items a[\s\S]*min-height: 44px/);
   assert.match(adoption, /:focus-visible/);
@@ -70,5 +70,5 @@ test("the product mapping preserves full-width workflows, touch, focus and reduc
 test("identifies Greenways stewardship and the repository licence", () => {
   assert.match(layout, /A Greenways Open Source Project/);
   assert.match(layout, /opensource\.greenways\.ai\/open-source/);
-  assert.match(layout, /hara-specs\/blob\/main\/LICENSE">Apache-2\.0/);
+  assert.match(layout, /hara-build\/blob\/main\/LICENSE">Apache-2\.0/);
 });

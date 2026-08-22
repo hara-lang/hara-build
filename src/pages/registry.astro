@@ -5,7 +5,7 @@ import registry from "../generated/registry.json";
 const layers = [...new Set(registry.specs.map(({ layer }) => layer))];
 const registryRef = /^[0-9a-f]{40}$/i.test(registry.source.ref || "") ? registry.source.ref.slice(0, 12) : registry.source.ref;
 ---
-<AppLayout title="Registry — Hara Specs" description="Browse the signed, versioned Hara specification catalogue.">
+<AppLayout title="Registry — Hara Build" description="Browse the signed, versioned Hara specification catalogue.">
   <section class="page-heading section-shell">
     <p class="hara-kicker">Specification registry</p>
     <h1>Discover executable standards.</h1>

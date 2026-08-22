@@ -1,7 +1,7 @@
 ---
 import AppLayout from "../layouts/AppLayout.astro";
 ---
-<AppLayout title="Check project.edn — Hara Specs" description="Inspect a Hara project manifest locally or through the conformity API.">
+<AppLayout title="Check project.edn — Hara Build" description="Inspect a Hara project manifest locally or through the conformity API.">
   <section class="page-heading section-shell">
     <p class="hara-kicker">Project conformance workbench</p>
     <h1>Inspect <code>project.edn</code> against the package contract.</h1>
@@ -53,7 +53,7 @@ import AppLayout from "../layouts/AppLayout.astro";
 
   <section class="api-contract section-shell">
     <div><p class="hara-kicker">Direct endpoint</p><h2>Validate the same file over HTTP.</h2><p>Send the EDN bytes to <code>POST /api/v1/packages/validate</code>.</p></div>
-    <pre><code>{`curl https://specs.hara-lang.io/api/v1/packages/validate \
+    <pre><code>{`curl https://build.hara-lang.org/api/v1/packages/validate \
   -H 'content-type: application/edn' \
   --data-binary @project.edn`}</code></pre>
   </section>

@@ -1,8 +1,8 @@
-name: Report specs domain cutover
+name: Report Build domain cutover
 
 on:
   workflow_run:
-    workflows: ["Deploy specs.hara-lang.org"]
+    workflows: ["Deploy build.hara-lang.org"]
     types: [completed]
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
             echo "- conclusion: \`$CONCLUSION\`"
             echo "- workflow run: [$RUN_ID]($RUN_URL)"
             echo "- production revision: \`$HEAD_SHA\`"
-            echo '- target: `https://specs.hara-lang.org`'
+            echo '- target: `https://build.hara-lang.org`'
             if [[ "$failed" != '[]' ]]; then
               echo
               echo 'Failed jobs:'

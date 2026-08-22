@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy publishable contribution metadata and specifications into hara-specs."""
+"""Copy publishable contribution metadata and specifications into hara-build."""
 
 from __future__ import annotations
 

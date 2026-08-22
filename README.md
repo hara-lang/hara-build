@@ -1,6 +1,6 @@
 # Hara specifications service
 
-`hara-lang/hara-specs` is the Netlify-deployable management and conformance service for `specs.hara-lang.org`.
+`hara-lang/hara-build` is the Netlify-deployable management and conformance service for `build.hara-lang.org`.
 
 The canonical specification documents and package releases live in [`hara-lang/hara-specs-registry`](https://github.com/hara-lang/hara-specs-registry). This repository owns the UI, versioned API, publishing workflow, document checker, reports, and browser/server Hara kernel adapters. It does not own or commit a duplicate specification catalogue.
 
@@ -29,7 +29,7 @@ For a fully reproducible release build, set `HARA_REGISTRY_REF` to an exact 40-c
 
 ## Shared GitHub identity
 
-The Specs header uses the shared GitHub identity issued by `id.hara-lang.org`; Specs does not run an independent OAuth client, retain a provider token, or sign a separate browser session. The common browser client reads the host-only identity session through a credentialed exact-origin request and presents the same stable GitHub account on www, Specs, Packages, and Identity.
+The Build header uses the shared GitHub identity issued by `id.hara-lang.org`; Build does not run an independent OAuth client, retain a provider token, or sign a separate browser session. The common browser client reads the host-only identity session through a credentialed exact-origin request and presents the same stable GitHub account on www, Build, Packages, and Identity.
 
 OAuth credentials and the session-signing secret are configured only on the Identity deployment. They must not be added to the Specs environment. Production and testing use the corresponding identity issuers:
 
@@ -61,7 +61,8 @@ npm run registry:check
 API discovery and the OpenAPI 3.1 description are available at:
 
 ```text
-GET /.well-known/hara-specs
+GET /.well-known/hara-build
+GET /.well-known/hara-specs  # compatibility alias
 GET /api
 GET /api/v1
 GET /api/openapi.json
