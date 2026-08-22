@@ -1,10 +1,14 @@
 ---
 import HaraMark from "@hara-lang/visual-language/astro/HaraMark.astro";
 import ThemeToggle from "@hara-lang/visual-language/astro/ThemeToggle.astro";
-import "@hara-lang/visual-language/theme.css";
+import Shell from "@hara-lang/visual-language/astro/v2/Shell.astro";
+import Header from "@hara-lang/visual-language/astro/v2/Header.astro";
+import ContextNav from "@hara-lang/visual-language/astro/v2/ContextNav.astro";
+import "@hara-lang/visual-language/v2.css";
 import "@hara-lang/visual-language/motifs.css";
 import "../styles/app.css";
 import "../styles/shell.css";
+import "../styles/v2-adoption.css";
 
 const {
   title = "Hara Build",
@@ -14,12 +18,17 @@ const {
 const canonical = new URL(canonicalPath, Astro.site);
 const socialImage = new URL("/og-hara-build.jpg", Astro.site);
 const activePath = Astro.url.pathname;
-const localNav = [
-  ["/", "Overview"],
-  ["/registry", "Registry"],
-  ["/check", "Check"],
-  ["/publish", "Publish"],
-  ["/developers", "API"]
+const ecosystemNav = [
+  { href: "https://play.hara-lang.org/", label: "Play", external: true },
+  { href: "https://learn.hara-lang.org/", label: "Learn", external: true },
+  { href: "https://build.hara-lang.org/", label: "Build", current: true }
+];
+const workflowNav = [
+  { href: "/", label: "Overview" },
+  { href: "/registry", label: "Registry" },
+  { href: "/check", label: "Check" },
+  { href: "/publish", label: "Publish" },
+  { href: "/developers", label: "API" }
 ];
 ---
 <!doctype html>
@@ -50,71 +59,46 @@ const localNav = [
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="hara-v2 build-product">
     <a class="skip-link" href="#content">Skip to content</a>
-    <header class="app-header">
-      <a class="brand" href="https://hara-lang.org/" aria-label="Hara home">
-        <HaraMark size={30} title="Hara" />
-        <span><strong>Hara</strong></span>
-      </a>
-      <nav class="ecosystem-nav" aria-label="Hara ecosystem navigation">
-        <a href="https://learn.hara-lang.org/">Learn</a>
-        <span aria-current="page" aria-disabled="true">Build</span>
-        <a href="https://play.hara-lang.org/">Play</a>
-      </nav>
-      <div class="header-actions">
+    <Shell sidebar={false} aside={false} mainId="content" class="build-v2-shell">
+      <Header
+        slot="header"
+        homeHref="https://hara-lang.org/"
+        section="Build"
+        nav={ecosystemNav}
+        activePath={activePath}
+        label="Hara Build"
+      >
         <div data-hara-identity></div>
-        <ThemeToggle label="Change colour theme" />
-      </div>
-    </header>
-    <nav class="context-nav" aria-label="Build navigation">
-      <div>
-        {localNav.map(([href, label]) => (
-          <a href={href} aria-current={activePath === href || (href !== "/" && activePath.startsWith(href)) ? "page" : undefined}>{label}</a>
-        ))}
-      </div>
-    </nav>
-    <main id="content">
+        <ThemeToggle label="Theme" />
+      </Header>
+      <ContextNav
+        slot="context"
+        items={workflowNav}
+        activePath={activePath}
+        label="Build workflow navigation"
+      />
+
       <slot />
-    </main>
-    <footer class="app-footer">
-      <div>
-        <HaraMark size={26} title="Hara" />
-        <span>Executable standards for the Hara ecosystem.</span>
-      </div>
-      <div class="footer-links">
-        <a href="https://opensource.greenways.ai/open-source/">A Greenways Open Source Project</a>
-        <a href="https://github.com/hara-lang/hara-build/blob/main/LICENSE">Apache-2.0</a>
-        <a href="https://github.com/hara-lang/hara-build">Service source</a>
-        <a href="https://github.com/hara-lang/hara-specs-registry">Registry source</a>
-        <a href="/developers">API</a>
-        <a href="/registry/index.json">Registry JSON</a>
-        <a href="/check">Checker</a>
-      </div>
-    </footer>
+
+      <footer slot="footer" class="app-footer">
+        <div>
+          <HaraMark size={26} title="Hara" />
+          <span>Executable standards for the Hara ecosystem.</span>
+        </div>
+        <div class="footer-links">
+          <a href="https://opensource.greenways.ai/open-source/">A Greenways Open Source Project</a>
+          <a href="https://github.com/hara-lang/hara-build/blob/main/LICENSE">Apache-2.0</a>
+          <a href="https://github.com/hara-lang/hara-build">Service source</a>
+          <a href="https://github.com/hara-lang/hara-specs-registry">Registry source</a>
+          <a href="/developers">API</a>
+          <a href="/registry/index.json">Registry JSON</a>
+          <a href="/check">Checker</a>
+        </div>
+      </footer>
+    </Shell>
     <script>
-      import { getThemePreference } from "@hara-lang/visual-language/theme.js";
-
-      const themeIcons = {
-        system: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>',
-        light: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>',
-        dark: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.5 8.5 0 1 0 20.2 15.4Z"></path></svg>'
-      };
-      const themeOrder = ["system", "light", "dark"];
-
-      const syncThemeIcon = () => {
-        const preference = getThemePreference();
-        const next = themeOrder[(themeOrder.indexOf(preference) + 1) % themeOrder.length];
-        document.querySelectorAll("[data-hara-theme-toggle]").forEach((button) => {
-          const icon = button.querySelector("[data-hara-theme-icon]");
-          if (icon) icon.innerHTML = themeIcons[preference] || themeIcons.system;
-          const currentLabel = preference.replace(/^./, (value) => value.toUpperCase());
-          const nextLabel = next.replace(/^./, (value) => value.toUpperCase());
-          button.setAttribute("aria-label", `${currentLabel} theme. Switch to ${nextLabel}.`);
-          button.setAttribute("title", `${currentLabel} theme`);
-        });
-      };
-
       const loadIdentityClient = () => {
         if (document.querySelector("script[data-hara-identity-client]")) return;
         const testing = location.hostname === "build.testing.hara-lang.org"
@@ -129,14 +113,8 @@ const localNav = [
         document.head.append(script);
       };
 
-      const initialiseShell = () => {
-        syncThemeIcon();
-        loadIdentityClient();
-      };
-
-      document.addEventListener("astro:page-load", initialiseShell);
-      addEventListener("hara:theme-change", syncThemeIcon);
-      initialiseShell();
+      document.addEventListener("astro:page-load", loadIdentityClient);
+      loadIdentityClient();
     </script>
   </body>
 </html>
