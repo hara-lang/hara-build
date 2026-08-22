@@ -1,11 +1,12 @@
-# Hara Specifications API
+# Hara Build API
 
 The service exposes a versioned JSON response API alongside the browser interface. Every registry response identifies the exact `hara-lang/hara-specs-registry` commit used by the build.
 
 ## Discovery
 
 ```text
-GET /.well-known/hara-specs
+GET /.well-known/hara-build
+GET /.well-known/hara-specs  # compatibility alias
 GET /api/v1
 GET /api/v1/health
 GET /api/v1/capabilities
@@ -17,7 +18,7 @@ Response envelopes include `X-Hara-API-Version`, `X-Hara-Registry-Ref`, and `X-R
 ## Search specifications
 
 ```sh
-curl 'https://specs.hara-lang.io/api/v1/specs?owner=hara-lang&executable=true&limit=20'
+curl 'https://build.hara-lang.org/api/v1/specs?owner=hara-lang&executable=true&limit=20'
 ```
 
 Read exact source or documentation bytes through the corresponding specification resource and add `?redirect=true` for an immutable raw GitHub redirect.
@@ -27,7 +28,7 @@ Read exact source or documentation bytes through the corresponding specification
 The general check endpoint uses a JSON request envelope because it can carry documents in several notations. The project document itself is EDN:
 
 ```sh
-curl https://specs.hara-lang.io/api/v1/checks \
+curl https://build.hara-lang.org/api/v1/checks \
   -H 'content-type: application/json' \
   --data '{
     "spec": "hara/package@0.1.0",
@@ -44,7 +45,7 @@ A completed check returns HTTP `200` whether the verdict is `yes` or `no`. Inval
 Send the contributor-authored `project.edn` directly:
 
 ```sh
-curl https://specs.hara-lang.io/api/v1/packages/validate \
+curl https://build.hara-lang.org/api/v1/packages/validate \
   -H 'content-type: application/edn' \
   --data-binary @project.edn
 ```

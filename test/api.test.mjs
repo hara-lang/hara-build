@@ -46,12 +46,12 @@ test("registry metadata and exact raw source links preserve provenance", () => {
 });
 
 test("pagination links preserve filters", () => {
-  const links = paginationLinks("https://specs.hara-lang.io/api/v1/specs?owner=hara-lang&limit=1", { nextCursor: encodeCursor(1), previousCursor: null });
+  const links = paginationLinks("https://build.hara-lang.org/api/v1/specs?owner=hara-lang&limit=1", { nextCursor: encodeCursor(1), previousCursor: null });
   assert.match(links.self, /owner=hara-lang/); assert.match(links.next, /cursor=/); assert.equal(links.previous, null);
 });
 
 test("JSON responses support request IDs, HEAD, and conditional GET without implicit wildcard CORS", async () => {
-  const request = new Request("https://specs.hara-lang.io/api/v1", { headers: { "x-request-id": "request-1" } });
+  const request = new Request("https://build.hara-lang.org/api/v1", { headers: { "x-request-id": "request-1" } });
   const value = { apiVersion: "1", data: { status: "ok" } };
   const response = sendJson(request, value, { etag: true, cacheControl: "public, max-age=60" });
   assert.equal(response.status, 200); assert.equal(response.headers.get("access-control-allow-origin"), null); assert.equal(response.headers.get("x-request-id"), "request-1"); assert.equal(await response.json().then((body) => body.data.status), "ok");
@@ -68,8 +68,8 @@ test("method guards and JSON envelope body limits return predictable results", a
 });
 
 test("OpenAPI describes the project validator and external identity authority", () => {
-  const document = createOpenApiDocument({ origin: "https://specs.testing.hara-lang.org" });
-  assert.equal(document.openapi, "3.1.0"); assert.equal(document.servers[0].url, "https://specs.testing.hara-lang.org");
+  const document = createOpenApiDocument({ origin: "https://build.testing.hara-lang.org" });
+  assert.equal(document.openapi, "3.1.0"); assert.equal(document.servers[0].url, "https://build.testing.hara-lang.org");
   for (const path of ["/api/v1/specs", "/api/v1/specs/{identifier}", "/api/v1/checks", "/api/v1/packages/validate"]) assert.ok(document.paths[path]);
   assert.ok(document.paths["/api/v1/packages/validate"].post.requestBody.content["application/edn"]);
   assert.equal(document.components.schemas.Specification.required.includes("coordinate"), true);

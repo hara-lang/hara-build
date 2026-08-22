@@ -7,22 +7,21 @@ const shell = await readFile(new URL("../src/styles/shell.css", import.meta.url)
 const config = await readFile(new URL("../astro.config.mjs", import.meta.url), "utf8");
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
 
-test("uses the canonical specs domain", () => {
-  assert.match(config, /https:\/\/specs\.hara-lang\.org/);
+test("uses the canonical Build domain", () => {
+  assert.match(config, /https:\/\/build\.hara-lang\.org/);
   assert.doesNotMatch(config, /hara-lang\.io/);
-  assert.match(readme, /specs\.hara-lang\.org/);
+  assert.match(readme, /build\.hara-lang\.org/);
   assert.doesNotMatch(readme, /specs\.hara-lang\.io/);
 });
 
 test("publishes a dedicated maximum-resolution specifications card", () => {
-  assert.match(layout, /og-hara-specs\.jpg/);
+  assert.match(layout, /og-hara-build\.jpg/);
   assert.match(layout, /og:image:width" content="3840"/);
   assert.match(layout, /og:image:height" content="2016"/);
 });
 
 test("keeps the Hara brand and actions at the edges with ecosystem links centred", () => {
-  assert.match(layout, /Benchmarks[\s\S]*Docs[\s\S]*aria-current="page" aria-disabled="true">Specs[\s\S]*World/);
-  assert.match(layout, /https:\/\/world\.hara-lang\.org\//);
+  assert.match(layout, /Learn[\s\S]*aria-current="page" aria-disabled="true">Build[\s\S]*Play/);
   assert.doesNotMatch(layout, />Source<\/a>/);
   assert.match(shell, /grid-template-columns: minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
   assert.match(shell, /\.app-header \.brand \{ justify-self: start; \}/);
@@ -61,5 +60,5 @@ test("uses icons only for system, light, and dark theme states", () => {
 test("identifies Greenways stewardship and the repository licence", () => {
   assert.match(layout, /A Greenways Open Source Project/);
   assert.match(layout, /opensource\.greenways\.ai\/open-source/);
-  assert.match(layout, /hara-specs\/blob\/main\/LICENSE">Apache-2\.0/);
+  assert.match(layout, /hara-build\/blob\/main\/LICENSE">Apache-2\.0/);
 });

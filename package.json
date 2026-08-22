@@ -1,10 +1,10 @@
 {
-  "name": "@hara-lang/specs",
+  "name": "@hara-lang/build",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
-  "description": "The Netlify management, publishing, and conformance service for the Hara specifications registry.",
+  "description": "The Hara Build developer portal, specifications registry service, and conformance surface.",
   "engines": {
     "node": ">=24"
   },

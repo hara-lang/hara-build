@@ -7,12 +7,12 @@ import "../styles/app.css";
 import "../styles/shell.css";
 
 const {
-  title = "Hara Specs",
-  description = "Publish, inspect, and verify executable Hara specifications.",
+  title = "Hara Build",
+  description = "Build with Hara: specifications, APIs, runtimes, packages, and evidence.",
   canonicalPath = Astro.url.pathname
 } = Astro.props;
 const canonical = new URL(canonicalPath, Astro.site);
-const socialImage = new URL("/og-hara-specs.jpg", Astro.site);
+const socialImage = new URL("/og-hara-build.jpg", Astro.site);
 const activePath = Astro.url.pathname;
 const localNav = [
   ["/", "Overview"],
@@ -31,7 +31,7 @@ const localNav = [
     <meta name="hara-identity-mode" content="popup" />
     <meta name="theme-color" content="#080a0d" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Hara Specifications" />
+    <meta property="og:site_name" content="Hara Build" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -40,12 +40,12 @@ const localNav = [
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="3840" />
     <meta property="og:image:height" content="2016" />
-    <meta property="og:image:alt" content="Hara Specifications — executable standards" />
+    <meta property="og:image:alt" content="Hara Build — developer tools and executable standards" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
-    <meta name="twitter:image:alt" content="Hara Specifications — executable standards" />
+    <meta name="twitter:image:alt" content="Hara Build — developer tools and executable standards" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
@@ -53,22 +53,21 @@ const localNav = [
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="app-header">
-      <a class="brand" href="https://www.hara-lang.org/" aria-label="Hara home">
+      <a class="brand" href="https://hara-lang.org/" aria-label="Hara home">
         <HaraMark size={30} title="Hara" />
         <span><strong>Hara</strong></span>
       </a>
       <nav class="ecosystem-nav" aria-label="Hara ecosystem navigation">
-        <a href="https://www.hara-lang.org/benchmarks/">Benchmarks</a>
-        <a href="https://www.hara-lang.org/docs/start/orientation/">Docs</a>
-        <span aria-current="page" aria-disabled="true">Specs</span>
-        <a href="https://world.hara-lang.org/">World</a>
+        <a href="https://learn.hara-lang.org/">Learn</a>
+        <span aria-current="page" aria-disabled="true">Build</span>
+        <a href="https://play.hara-lang.org/">Play</a>
       </nav>
       <div class="header-actions">
         <div data-hara-identity></div>
         <ThemeToggle label="Change colour theme" />
       </div>
     </header>
-    <nav class="context-nav" aria-label="Specifications navigation">
+    <nav class="context-nav" aria-label="Build navigation">
       <div>
         {localNav.map(([href, label]) => (
           <a href={href} aria-current={activePath === href || (href !== "/" && activePath.startsWith(href)) ? "page" : undefined}>{label}</a>
@@ -85,8 +84,8 @@ const localNav = [
       </div>
       <div class="footer-links">
         <a href="https://opensource.greenways.ai/open-source/">A Greenways Open Source Project</a>
-        <a href="https://github.com/hara-lang/hara-specs/blob/main/LICENSE">Apache-2.0</a>
-        <a href="https://github.com/hara-lang/hara-specs">Service source</a>
+        <a href="https://github.com/hara-lang/hara-build/blob/main/LICENSE">Apache-2.0</a>
+        <a href="https://github.com/hara-lang/hara-build">Service source</a>
         <a href="https://github.com/hara-lang/hara-specs-registry">Registry source</a>
         <a href="/developers">API</a>
         <a href="/registry/index.json">Registry JSON</a>
@@ -118,7 +117,7 @@ const localNav = [
 
       const loadIdentityClient = () => {
         if (document.querySelector("script[data-hara-identity-client]")) return;
-        const testing = location.hostname === "specs.testing.hara-lang.org"
+        const testing = location.hostname === "build.testing.hara-lang.org"
           || location.hostname.endsWith(".testing.hara-lang.org");
         const identityOrigin = testing
           ? "https://id.testing.hara-lang.org"

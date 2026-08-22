@@ -31,7 +31,7 @@ export default async (request: Request, context = {}) => {
     data: {
       status: "ok",
       checkedAt: new Date().toISOString(),
-      service: "hara-specs",
+      service: "hara-build",
       registry: registryState,
       deploy: {
         id: context?.deploy?.id || null,

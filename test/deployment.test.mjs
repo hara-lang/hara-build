@@ -22,7 +22,7 @@ test("deploys testing and production from their intended branches", () => {
 });
 
 test("publishes production before non-blocking domain correction", () => {
-  const deployIndex = workflow.indexOf("Deploy main to specs.hara-lang.org");
+  const deployIndex = workflow.indexOf("Deploy main to build.hara-lang.org");
   const domainIndex = workflow.indexOf("Correct the production domain");
 
   assert.ok(deployIndex >= 0);
@@ -30,7 +30,7 @@ test("publishes production before non-blocking domain correction", () => {
   assert.match(workflow, /Correct the production domain[\s\S]*continue-on-error: true/);
   assert.match(workflow, /--request PATCH/);
   assert.match(workflow, /api\.netlify\.com\/api\/v1\/sites\/\$\{NETLIFY_SITE_ID\}/);
-  assert.match(workflow, /"custom_domain":"specs\.hara-lang\.org"/);
+  assert.match(workflow, /"custom_domain":"build\.hara-lang\.org"/);
   assert.match(workflow, /"force_ssl":true/);
   assert.doesNotMatch(workflow, /specs\.hara-long\.org/);
 });

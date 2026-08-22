@@ -1,16 +1,16 @@
-export function createOpenApiDocument({ origin = "https://specs.hara-lang.io" } = {}) {
+export function createOpenApiDocument({ origin = "https://build.hara-lang.org" } = {}) {
   const problemResponse = { description: "API problem", content: { "application/json": { schema: { $ref: "#/components/schemas/ProblemEnvelope" } } } };
   const json = (schema) => ({ "application/json": { schema } });
   return {
     openapi: "3.1.0",
     info: {
-      title: "Hara Specifications API",
+      title: "Hara Build API",
       version: "1.0.0",
       summary: "Discover executable specifications and validate project.edn.",
       description: "The API reads the Git-authoritative specifications registry at an exact commit. Project validation uses the single project.edn authoring contract; locks and package indexes are generated outputs."
     },
     servers: [{ url: origin }],
-    externalDocs: { description: "Hara specifications service source", url: "https://github.com/hara-lang/hara-specs" },
+    externalDocs: { description: "Hara Build service source", url: "https://github.com/hara-lang/hara-build" },
     tags: [
       { name: "Discovery", description: "Service metadata, health, and capabilities." },
       { name: "Specifications", description: "Read the exact pinned specifications catalogue." },

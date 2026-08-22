@@ -4,7 +4,7 @@ import registry from "../generated/registry.json";
 
 const registryRef = registry.source.ref.slice(0, 12);
 ---
-<AppLayout title="API — Hara Specs" description="Versioned HTTP access to the Hara specifications registry and conformity checker.">
+<AppLayout title="API — Hara Build" description="Versioned HTTP access to the Hara specifications registry and conformity checker.">
   <section class="page-heading section-shell">
     <p class="hara-kicker">HTTP API · version 1</p>
     <h1>Inspect exact specifications from code.</h1>
@@ -15,7 +15,7 @@ const registryRef = registry.source.ref.slice(0, 12);
     </div>
     <div class="command" aria-label="API discovery example">
       <span aria-hidden="true">$</span>
-      <code>curl https://specs.hara-lang.org/api/v1/specs?executable=true&amp;limit=20</code>
+      <code>curl https://build.hara-lang.org/api/v1/specs?executable=true&amp;limit=20</code>
     </div>
   </section>
 
@@ -65,7 +65,7 @@ const registryRef = registry.source.ref.slice(0, 12);
     <article class="hara-surface detail-panel">
       <p class="hara-kicker">Authority boundary</p>
       <h2>Specifications do not mint identities.</h2>
-      <p><code>hara-specs</code> validates publication material, but publisher enrollment, namespace grants, key possession, and revocation belong to the external Hara identity authority at <code>id.hara-lang.org</code>.</p>
+      <p><code>hara-build</code> validates publication material, but publisher enrollment, namespace grants, key possession, and revocation belong to the external Hara identity authority at <code>id.hara-lang.org</code>.</p>
       <p>Canonical registry writes remain disabled until that authority supplies verified, path-scoped authorization.</p>
     </article>
   </section>

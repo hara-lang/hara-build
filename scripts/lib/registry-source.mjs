@@ -24,7 +24,7 @@ export function registryConfig(environment = process.env) {
 
 const githubHeaders = (token, accept = "application/vnd.github+json") => ({
   Accept: accept,
-  "User-Agent": "hara-specs-service",
+  "User-Agent": "hara-build-service",
   ...(token ? { Authorization: `Bearer ${token}` } : {})
 });
 
