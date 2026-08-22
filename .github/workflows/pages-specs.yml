@@ -31,6 +31,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run Build tests
+        run: npm test
+
       - name: Build the Hara Build service
         run: npm run build
 
@@ -48,16 +51,20 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
 
-      - name: Correct the production domain
+      - name: Reconcile testing Build domain
+        if: github.ref_name == 'testing'
+        run: bash .github/scripts/reconcile-netlify-domain.sh
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
+          NETLIFY_CUSTOM_DOMAIN: build.testing.hara-lang.org
+          NETLIFY_LEGACY_DOMAIN: specs.testing.hara-lang.org
+
+      - name: Reconcile production Build domain
         if: github.ref_name == 'main'
-        continue-on-error: true
-        run: |
-          curl --fail-with-body --silent --show-error \
-            --request PATCH \
-            --header "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
-            --header "Content-Type: application/json" \
-            --data '{"custom_domain":"build.hara-lang.org","force_ssl":true}' \
-            "https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}"
+        run: bash .github/scripts/reconcile-netlify-domain.sh
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+          NETLIFY_CUSTOM_DOMAIN: build.hara-lang.org
+          NETLIFY_LEGACY_DOMAIN: specs.hara-lang.org

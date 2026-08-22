@@ -31,7 +31,7 @@ For a fully reproducible release build, set `HARA_REGISTRY_REF` to an exact 40-c
 
 The Build header uses the shared GitHub identity issued by `id.hara-lang.org`; Build does not run an independent OAuth client, retain a provider token, or sign a separate browser session. The common browser client reads the host-only identity session through a credentialed exact-origin request and presents the same stable GitHub account on www, Build, Packages, and Identity.
 
-OAuth credentials and the session-signing secret are configured only on the Identity deployment. They must not be added to the Specs environment. Production and testing use the corresponding identity issuers:
+OAuth credentials and the session-signing secret are configured only on the Identity deployment. They must not be added to the Build environment. Production and testing use the corresponding identity issuers:
 
 ```text
 https://id.hara-lang.org
@@ -62,7 +62,6 @@ API discovery and the OpenAPI 3.1 description are available at:
 
 ```text
 GET /.well-known/hara-build
-GET /.well-known/hara-specs  # compatibility alias
 GET /api
 GET /api/v1
 GET /api/openapi.json
@@ -87,7 +86,7 @@ Specification listing supports filters, stable sorting, cursor pagination, `HEAD
 
 The service does not enable wildcard cross-origin access by default. A deployment that needs browser clients on other origins must define and review an explicit origin policy rather than inheriting an unconditional `*` rule.
 
-The original registry and document-check aliases remain compatible and advertise their version-one successors. New project validation uses only the versioned endpoint. See [`docs/api.md`](docs/api.md) for request and response examples.
+The version-one registry and document-check endpoints advertise their successors. New project validation uses only the versioned endpoint. See [`docs/api.md`](docs/api.md) for request and response examples.
 
 ## Product surfaces
 
