@@ -1,4 +1,4 @@
-# Hara Specs — Visual Language v2 adoption
+# Hara Build — Visual Language v2 adoption
 
 ## Accepted source
 
@@ -33,13 +33,13 @@ This visual adoption does not change:
 
 ## Ownership boundary
 
-Visual Language owns shared tokens, shell geometry, ecosystem navigation, workflow navigation, responsive grammar and state presentation. `hara-specs` owns registry data, checker and publisher behavior, API contracts, identity loading, canonical metadata and product-specific workflow composition.
+Visual Language owns shared tokens, shell geometry, ecosystem navigation, workflow navigation, responsive grammar and state presentation. `hara-build` owns registry data, checker and publisher behavior, API contracts, identity loading, canonical metadata and product-specific workflow composition.
 
 `src/styles/v2-adoption.css` is a narrow product mapping layer. It consumes protected `--hara-v2-*` variables but does not redefine them.
 
 ## Remaining issue #37 work
 
-This PR begins but does not close the complete Specs adoption. Follow-on slices should:
+This PR begins but does not close the complete Build adoption. Follow-on slices should:
 
 1. align Registry, Check, Publish and Developer screens with the accepted `/v2/specs/` reference compositions;
 2. apply the shared evidence-state and data-visualisation grammar to conformance results without transferring registry or checker authority;

@@ -6,7 +6,6 @@ The service exposes a versioned JSON response API alongside the browser interfac
 
 ```text
 GET /.well-known/hara-build
-GET /.well-known/hara-specs  # compatibility alias
 GET /api/v1
 GET /api/v1/health
 GET /api/v1/capabilities

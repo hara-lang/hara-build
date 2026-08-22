@@ -4,7 +4,7 @@ import test from "node:test";
 
 const layout = await readFile(new URL("../src/layouts/AppLayout.astro", import.meta.url), "utf8");
 
-test("opts every Specs page into the shared popup sign-in mode", () => {
+test("opts every Build page into the shared popup sign-in mode", () => {
   assert.match(layout, /<meta name="hara-identity-mode" content="popup" \/>/);
   assert.match(layout, /data-hara-identity/);
   assert.match(layout, /identity-client\.js/);

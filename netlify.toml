@@ -18,6 +18,18 @@
   port = 8888
   framework = "#custom"
 
+[[redirects]]
+  from = "https://specs.hara-lang.org/*"
+  to = "https://build.hara-lang.org/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://specs.testing.hara-lang.org/*"
+  to = "https://build.testing.hara-lang.org/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]

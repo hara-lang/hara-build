@@ -7,7 +7,7 @@ const adoption = await readFile(new URL("../src/styles/v2-adoption.css", import.
 const config = await readFile(new URL("../astro.config.mjs", import.meta.url), "utf8");
 const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
-const acceptedRevision = "a2ab66d0fde79edb1cee46b79528098b3fda68cf";
+const acceptedRevision = "b512a12e8d7191c9092d195ca0ddc894b0ba54d2";
 
 test("uses the canonical Build domain", () => {
   assert.match(config, /https:\/\/build\.hara-lang\.org/);
@@ -64,7 +64,7 @@ test("the product mapping preserves full-width workflows, touch, focus and reduc
   assert.match(adoption, /:focus-visible/);
   assert.match(adoption, /scroll-margin-top/);
   assert.match(adoption, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.doesNotMatch(adoption, /--hara-v2-[A-Za-z0-9_-]+\s*:/, "Specs may consume but not redefine protected v2 tokens");
+  assert.doesNotMatch(adoption, /--hara-v2-[A-Za-z0-9_-]+\s*:/, "Build may consume but not redefine protected v2 tokens");
 });
 
 test("identifies Greenways stewardship and the repository licence", () => {

@@ -60,5 +60,5 @@ export default async (request: Request, context = {}) => {
 };
 
 export const config = {
-  path: ["/api", "/api/v1", "/.well-known/hara-build", "/.well-known/hara-specs"]
+  path: ["/api", "/api/v1", "/.well-known/hara-build"]
 };
