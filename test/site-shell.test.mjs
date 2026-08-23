@@ -7,7 +7,6 @@ const adoption = await readFile(new URL("../src/styles/v2-adoption.css", import.
 const config = await readFile(new URL("../astro.config.mjs", import.meta.url), "utf8");
 const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
-const acceptedRevision = "b512a12e8d7191c9092d195ca0ddc894b0ba54d2";
 
 test("uses the canonical Build domain", () => {
   assert.match(config, /https:\/\/build\.hara-lang\.org/);
@@ -24,14 +23,14 @@ test("publishes a dedicated maximum-resolution specifications card", () => {
 
 test("pins and consumes the accepted shared v2 shell contract", () => {
   assert.equal(
-    packageJson.dependencies["@hara-lang/visual-language"],
-    `github:hara-lang/visual-language#${acceptedRevision}`
+    packageJson.dependencies["@hara-lang/ui"],
+    "file:../../technology/hara-ui"
   );
   for (const component of ["Shell", "Header", "ContextNav"]) {
-    assert.match(layout, new RegExp(`import ${component} from "@hara-lang/visual-language/astro/v2/${component}\\.astro"`));
+    assert.match(layout, new RegExp(`import ${component} from "@hara-lang/ui-astro/astro/v2/${component}\\.astro"`));
     assert.match(layout, new RegExp(`<${component}`));
   }
-  assert.match(layout, /@hara-lang\/visual-language\/v2\.css/);
+  assert.match(layout, /@hara-lang\/ui\/v2\.css/);
   assert.match(layout, /body class="hara-v2 build-product"/);
   assert.match(layout, /<Shell sidebar=\{false\} aside=\{false\} mainId="content" class="build-v2-shell">/);
 });
