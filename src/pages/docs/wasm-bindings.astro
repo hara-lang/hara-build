@@ -1,0 +1,285 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+
+const inspectCommand = `hara extension inspect library.wasm \\
+  --out library.interface.hal \\
+  --namespace example.library`;
+const bindCommand = `hara extension bind interface.hal \\
+  --module library.wasm \\
+  --out dist
+
+hara extension check dist
+hara extension test dist`;
+const coreInterface = `(wasm/interface
+ {:schema "hara.wasm-interface/0-alpha"
+  :namespace example.math
+  :module "add.wasm"
+  :exports
+  {add {:wasm/export "add"
+        :arguments [{:name left :hara/type :i64 :wasm/type :i64}
+                    {:name right :hara/type :i64 :wasm/type :i64}]
+        :returns {:hara/type :i64 :wasm/type :i64}}}})`;
+const memoryInterface = `(wasm/interface
+ {:schema "hara.wasm-interface/0-alpha"
+  :namespace example.codec
+  :module "echo.wasm"
+  :memory {:export "memory" :allocate "alloc" :release "free"}
+  :exports
+  {echo {:wasm/export "echo_bytes"
+         :arguments [{:name input
+                      :hara/type :bytes
+                      :wasm/type :i32
+                      :lower [:pointer :length]
+                      :ownership :borrowed}]
+         :returns {:hara/type :bytes
+                   :wasm/type :i64
+                   :lift :packed-i64
+                   :ownership :caller}}}})`;
+const htaInterface = `(wasm/interface
+ {:schema "hara.wasm-interface/0-alpha"
+  :namespace example.math.async
+  :module "add.wasm"
+  :exports
+  {add {:wasm/export "add"
+        :arguments [{:name left :hara/type :i64 :wasm/type :i64}
+                    {:name right :hara/type :i64 :wasm/type :i64}]
+        :returns {:hara/type :i64 :wasm/type :i64}
+        :async true
+        :operation "add"}}})`;
+const packageTree = `dist/
+├── package.edn
+├── project.edn
+├── interface.hal
+├── bindings.edn
+├── hara.build-product.edn
+├── conformance/
+│   └── bindings.edn
+├── library.wasm
+├── adapter.wasm       # eligible HTA interfaces only
+└── adapter.edn        # when adapter.wasm is emitted`;
+const witCommands = `hara extension wit-import api.wit \\
+  --out api.hal \\
+  --ir api.edn \\
+  --module api.wasm \\
+  --strict
+
+hara extension wit-project api.hal \\
+  --out api.wit \\
+  --strict`;
+---
+<AppLayout title="Wasm bindings — Hara Build" description="Generate verified Hara packages for existing WebAssembly libraries from restricted .hal interfaces.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">Docs · Wasm bindings</p>
+    <h1>Describe the meaning that raw Wasm cannot.</h1>
+    <p>A Wasm binary exposes machine signatures. A restricted <code>.hal</code> interface supplies Hara names, semantic types, ownership, lifecycle and host authority. Bindgen verifies the two and emits a deterministic package; it does not require per-library generated JavaScript, Rust, Java, or C glue.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="#workflow">Author a binding</a>
+      <a class="button" href="#examples">Open the examples</a>
+    </div>
+  </section>
+
+  <section class="split-intro section-shell">
+    <div>
+      <p class="hara-kicker">Model</p>
+      <h2>Binary facts plus semantic intent.</h2>
+      <p>Inspection discovers exports, imports, memories and raw signatures without instantiating the module. The interface then states what those values mean. Hara compiles that declaration into one canonical binding plan shared by the native Rust runtime, the JVM/Truffle runtime and the browser runtime.</p>
+    </div>
+    <div class="architecture-flow" aria-label="Wasm binding flow">
+      <div><span>01</span><strong>library.wasm + interface.hal</strong><small>Raw ABI and semantic contract</small></div>
+      <i aria-hidden="true">→</i>
+      <div><span>02</span><strong>canonical binding IR</strong><small>Verified names, types, ownership and target</small></div>
+      <i aria-hidden="true">→</i>
+      <div><span>03</span><strong>portable package</strong><small>Digests, bindings, conformance and optional adapter</small></div>
+    </div>
+  </section>
+
+  <section class="section-shell doc-section" id="targets">
+    <div class="section-heading">
+      <div><p class="hara-kicker">Target selection</p><h2>Three execution routes.</h2></div>
+    </div>
+    <div class="spec-detail-grid">
+      <article class="hara-surface detail-panel">
+        <p class="hara-kicker">core.v1</p>
+        <h2>Direct scalar calls.</h2>
+        <p>Use for synchronous, import-free functions whose arguments and result are direct <code>i32</code>, <code>i64</code>, <code>f32</code>, <code>f64</code>, boolean-as-<code>i32</code>, or <code>void</code>. Native package consumers use the direct import route.</p>
+        <pre class="doc-code"><code>{coreInterface}</code></pre>
+      </article>
+      <article class="hara-surface detail-panel">
+        <p class="hara-kicker">memory.v1</p>
+        <h2>Strings and exact bytes.</h2>
+        <p>Use for synchronous, import-free libraries that expose one bounded linear memory and explicit allocation/release conventions. Hara lowers pointer/length inputs and lifts packed pointer/length results through a generic host executor.</p>
+        <pre class="doc-code"><code>{memoryInterface}</code></pre>
+      </article>
+      <article class="hara-surface detail-panel">
+        <p class="hara-kicker">hta.v1</p>
+        <h2>Async and host interaction.</h2>
+        <p>Use HTA when the semantic interface needs asynchronous completion, cancellation, host calls, callbacks, handles, resources, or richer lifecycle rules. Generated HTA packages are loaded through <code>:require</code>; eligible scalar interfaces can receive a deterministic <code>adapter.wasm</code>.</p>
+        <pre class="doc-code"><code>{htaInterface}</code></pre>
+      </article>
+      <article class="hara-surface detail-panel">
+        <p class="hara-kicker">No silent downgrade</p>
+        <h2>The interface chooses the boundary.</h2>
+        <p>Bindgen never treats a pointer-bearing or asynchronous declaration as a scalar call merely because the raw Wasm uses integers. Unsupported combinations fail before publication instead of falling back to a weaker ABI.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-shell doc-section" id="workflow">
+    <div class="section-heading">
+      <div><p class="hara-kicker">Authoring workflow</p><h2>Inspect, describe, bind, verify.</h2></div>
+    </div>
+    <div class="doc-stack">
+      <article class="hara-surface detail-panel">
+        <h2>1. Inspect the module</h2>
+        <p>The inspector reads Wasm sections but does not instantiate the module. It deliberately emits unresolved Hara types where the binary cannot reveal whether an integer is a number, pointer, enum, handle, length, or error code.</p>
+        <pre class="doc-code"><code>{inspectCommand}</code></pre>
+      </article>
+      <article class="hara-surface detail-panel">
+        <h2>2. Complete the semantic interface</h2>
+        <p>Replace unresolved types with the Hara-visible contract. For non-scalar values, state lowering/lifting and ownership explicitly. The source is parsed as restricted data and is not evaluated during generation.</p>
+      </article>
+      <article class="hara-surface detail-panel">
+        <h2>3. Bind and validate</h2>
+        <p><code>bind</code> verifies every declared raw export and helper against the exact module bytes, selects the target, computes digests and writes the package atomically.</p>
+        <pre class="doc-code"><code>{bindCommand}</code></pre>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-shell doc-section" id="package">
+    <div class="section-heading">
+      <div><p class="hara-kicker">Generated package</p><h2>The output is data plus Wasm.</h2></div>
+    </div>
+    <div class="spec-detail-grid">
+      <article class="hara-surface detail-panel">
+        <pre class="doc-code doc-code-tall"><code>{packageTree}</code></pre>
+      </article>
+      <article class="hara-surface detail-panel">
+        <dl class="detail-list">
+          <div><dt><code>interface.hal</code></dt><dd>canonical semantic interface</dd></div>
+          <div><dt><code>bindings.edn</code></dt><dd>target-specific execution plan</dd></div>
+          <div><dt><code>project.edn</code></dt><dd>Hara extension declaration</dd></div>
+          <div><dt><code>package.edn</code></dt><dd>artifact identity, digests and lifecycle</dd></div>
+          <div><dt><code>hara.build-product.edn</code></dt><dd>tool and input provenance</dd></div>
+          <div><dt><code>conformance/</code></dt><dd>portable claimed-export evidence</dd></div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-shell doc-section" id="memory">
+    <div class="section-heading">
+      <div><p class="hara-kicker">memory.v1</p><h2>Ownership is part of the ABI.</h2></div>
+    </div>
+    <div class="doc-table-wrap hara-surface">
+      <table class="doc-table">
+        <thead><tr><th>Position</th><th>Ownership</th><th>Host action</th></tr></thead>
+        <tbody>
+          <tr><td>input</td><td><code>borrowed</code></td><td>copy for the call; do not call <code>free</code></td></tr>
+          <tr><td>input</td><td><code>transferred</code></td><td>release only when invocation does not complete</td></tr>
+          <tr><td>result</td><td><code>caller</code></td><td>copy, then release exactly once</td></tr>
+          <tr><td>result</td><td><code>callee</code></td><td>copy; do not release from the host</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="spec-detail-grid doc-grid-gap">
+      <article class="hara-surface detail-panel">
+        <p class="hara-kicker">Limits</p>
+        <h2>Copying is bounded.</h2>
+        <p>The current alpha contract bounds linear memory to 64 MiB, one transferred value to 16 MiB, input copies to 32 MiB, and aggregate input/output copying to 48 MiB. Pointer arithmetic is checked before access.</p>
+      </article>
+      <article class="hara-surface detail-panel">
+        <p class="hara-kicker">Current boundary</p>
+        <h2><code>reallocate</code> is reserved.</h2>
+        <p>The current <code>memory.v1</code> implementation supports explicit <code>alloc(i32) -&gt; i32</code> and <code>free(i32) -&gt; void</code>. A declared reallocator is rejected until a later ABI revision.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-shell doc-section" id="hosts">
+    <div class="section-heading">
+      <div><p class="hara-kicker">Cross-runtime execution</p><h2>One plan, host-specific executors.</h2></div>
+    </div>
+    <div class="spec-detail-grid">
+      <article class="hara-surface detail-panel"><h2>Rust / Wasmtime</h2><p>The native runtime verifies the package and canonical plan, then uses a generic bounded Wasmtime executor. Direct scalar calls stay on the scalar fast path.</p></article>
+      <article class="hara-surface detail-panel"><h2>JVM / Truffle</h2><p>The JVM reads the same <code>bindings.edn</code> plan and mirrors pointer checks, UTF-8 validation, copy limits, ownership cleanup and public-to-raw export aliases without generating Java for the library.</p></article>
+      <article class="hara-surface detail-panel"><h2>Browser</h2><p>The browser SDK exposes <code>installMemoryWasmBinding(manifest, interface, bindings, bytes)</code>, verifies the canonical plan and module, then exposes the installed namespace through the ordinary Hara runtime.</p></article>
+      <article class="hara-surface detail-panel"><h2>HTA providers</h2><p>Rust, browser worker/shared-worker and JVM HTA providers share operation, cancellation, capability and handle semantics. Rich bindings use HTA rather than inventing host-language wrappers.</p></article>
+    </div>
+  </section>
+
+  <section class="section-shell doc-section" id="wit">
+    <div class="section-heading">
+      <div><p class="hara-kicker">WIT interoperability</p><h2>Use WIT as an input, not as Hara's semantic authority.</h2></div>
+    </div>
+    <article class="hara-surface detail-panel">
+      <p>Supported WIT packages, worlds, interfaces, functions, records, variants, lists, options, results, tuples and resources can seed a deterministic Hara interface. Hara-specific ownership, capabilities, errors, callbacks, handles and HTA lifecycle remain authoritative in <code>.hal</code>. Strict mode fails before writing a lossy projection.</p>
+      <pre class="doc-code"><code>{witCommands}</code></pre>
+    </article>
+  </section>
+
+  <section class="section-shell doc-section" id="examples">
+    <div class="section-heading">
+      <div><p class="hara-kicker">Sample projects</p><h2>Start from a complete fixture.</h2></div>
+    </div>
+    <div class="spec-grid">
+      <article class="spec-card">
+        <div class="spec-card-topline"><span class="status-pill status-ready">core.v1</span><span class="version">scalar</span></div>
+        <div><p class="package-name">example.math</p><h3>Direct add</h3><p>A tiny import-free <code>i64 + i64 -&gt; i64</code> module with the authored interface and inspect/bind/check commands.</p></div>
+        <div class="spec-card-actions"><a href="https://github.com/hara-lang/hara-build/tree/main/examples/wasm-bindings/core-v1">Open sample</a></div>
+      </article>
+      <article class="spec-card">
+        <div class="spec-card-topline"><span class="status-pill status-ready">memory.v1</span><span class="version">bytes</span></div>
+        <div><p class="package-name">example.codec</p><h3>Echo bytes</h3><p>A bounded linear-memory module with <code>alloc</code>, <code>free</code>, pointer/length input lowering, packed result lifting and caller-owned cleanup.</p></div>
+        <div class="spec-card-actions"><a href="https://github.com/hara-lang/hara-build/tree/main/examples/wasm-bindings/memory-v1">Open sample</a></div>
+      </article>
+      <article class="spec-card">
+        <div class="spec-card-topline"><span class="status-pill status-ready">hta.v1</span><span class="version">adapter</span></div>
+        <div><p class="package-name">example.math.async</p><h3>Async scalar adapter</h3><p>The same scalar library described as an asynchronous operation, causing bindgen to select HTA and emit an eligible deterministic adapter package.</p></div>
+        <div class="spec-card-actions"><a href="https://github.com/hara-lang/hara-build/tree/main/examples/wasm-bindings/hta-v1">Open sample</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Implementation references</p>
+      <h2>Follow the versioned contract.</h2>
+      <p>The public schemas are still alpha. This guide describes the current implementation; exact ABI rules remain with the runtime specification and source.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara/blob/main/core/spec/wasm-memory-v1.md"><span>Current memory ABI</span><code>core/spec/wasm-memory-v1.md</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/spec/wasm-wit-interoperability.md"><span>WIT interoperability</span><code>core/spec/wasm-wit-interoperability.md</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/wasm_binding.rs"><span>Canonical binding model</span><code>core/rust/src/wasm_binding.rs</code></a>
+      <a href="https://github.com/hara-lang/hara/issues/950"><span>Completed implementation train</span><code>hara-lang/hara#950</code></a>
+    </div>
+  </section>
+</AppLayout>
+
+<style>
+  .doc-section { padding-block: clamp(64px, 8vw, 110px); }
+  .doc-stack { display: grid; gap: 1rem; }
+  .doc-grid-gap { margin-top: 1rem; }
+  .doc-code {
+    margin: 1.4rem 0 0;
+    padding: 1rem;
+    overflow: auto;
+    color: var(--hara-text);
+    background: var(--hara-bg-clean);
+    border: 1px solid var(--hara-line);
+    border-radius: var(--hara-radius-sm);
+    font-size: .78rem;
+    line-height: 1.55;
+    white-space: pre;
+  }
+  .doc-code-tall { min-height: 100%; margin-top: 0; }
+  .doc-table-wrap { overflow-x: auto; padding: .6rem 1.2rem; }
+  .doc-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .doc-table th, .doc-table td { padding: 1rem .75rem; text-align: left; border-bottom: 1px solid var(--hara-line); }
+  .doc-table th { color: var(--hara-muted); font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; }
+  .doc-table tr:last-child td { border-bottom: 0; }
+  @media (max-width: 760px) {
+    .architecture-flow { grid-template-columns: 1fr; }
+    .architecture-flow i { transform: rotate(90deg); justify-self: center; }
+  }
+</style>

@@ -1,0 +1,9 @@
+(wasm/interface
+ {:schema "hara.wasm-interface/0-alpha"
+  :namespace example.math
+  :module "add.wasm"
+  :exports
+  {add {:wasm/export "add"
+        :arguments [{:name left :hara/type :i64 :wasm/type :i64}
+                    {:name right :hara/type :i64 :wasm/type :i64}]
+        :returns {:hara/type :i64 :wasm/type :i64}}}})

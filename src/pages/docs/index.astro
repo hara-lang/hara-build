@@ -1,0 +1,56 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+---
+<AppLayout title="Docs — Hara Build" description="Build-oriented documentation for Hara packages, runtimes, Wasm bindings, and executable standards.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">Build documentation</p>
+    <h1>Build artifacts with explicit contracts.</h1>
+    <p>These guides cover the package and runtime boundaries used by Hara Build. Normative specifications remain in the specifications registry and implementation contracts remain with the owning repositories.</p>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Documentation guides">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Wasm bindings</p>
+      <h2>Bind an existing Wasm library from a semantic <code>.hal</code> interface.</h2>
+      <p>Inspect raw exports, define Hara-visible types and ownership, generate a deterministic package, and choose the correct <code>core.v1</code>, <code>memory.v1</code>, or <code>hta.v1</code> route.</p>
+      <div class="detail-actions"><a class="button button-primary" href="/docs/wasm-bindings/">Read the guide</a></div>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Executable specifications</p>
+      <h2>Inspect the canonical registry and conformance surface.</h2>
+      <p>Use the registry for exact specification revisions and the checker for document or package validation.</p>
+      <div class="detail-actions">
+        <a class="button" href="/registry">Registry</a>
+        <a class="button" href="/check">Check</a>
+      </div>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Packages</p>
+      <h2>Author and validate package metadata before publication.</h2>
+      <p>The Build service validates package descriptors and artifact metadata. Identity and namespace grants remain outside this service.</p>
+      <div class="detail-actions"><a class="button" href="/publish">Package authoring</a></div>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">HTTP API</p>
+      <h2>Use the same registry and check contracts from code.</h2>
+      <p>The versioned API exposes discovery, exact specification source, capabilities, and conformance checks.</p>
+      <div class="detail-actions"><a class="button" href="/developers">API reference</a></div>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Authority</p>
+      <h2>Docs explain; specs define.</h2>
+      <p>Build documentation is descriptive. When a guide and a versioned specification disagree, use the versioned specification and report the documentation drift.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara"><span>Runtime and bindgen implementation</span><code>hara-lang/hara</code></a>
+      <a href="https://github.com/hara-lang/hara-specs-registry"><span>Normative specifications</span><code>hara-lang/hara-specs-registry</code></a>
+      <a href="https://github.com/hara-lang/hara-build"><span>Build documentation source</span><code>hara-lang/hara-build</code></a>
+    </div>
+  </section>
+</AppLayout>
