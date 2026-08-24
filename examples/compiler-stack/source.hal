@@ -1,0 +1,11 @@
+(ns example.compiler-stack)
+
+(defn triangular
+  [n]
+  (loop [i 0
+         total 0]
+    (if (< i n)
+      (recur (+ i 1) (+ total i))
+      total)))
+
+(triangular 10)

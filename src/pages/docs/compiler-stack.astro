@@ -1,0 +1,177 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+---
+<AppLayout title="Compiler stack — Hara Build" description="How Hara source becomes HBC and whole-Wasm compiled products, and how the compiler stack relates to runtime and foreign-Wasm binding.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">Compiler stack</p>
+    <h1>One source-language pipeline, two compiled products.</h1>
+    <p>Hara source is read into spanned forms, normalized through namespace configuration, compiled into one validated bytecode program, and encoded as HBC. Whole-Wasm is built from that canonical HBC program rather than from a second source-language compiler.</p>
+    <div class="command" aria-label="Compiler stack summary">
+      <span aria-hidden="true">→</span>
+      <code>.hal → spanned Forms → validated Program → HBC hbc0 → VM or Whole Wasm hnw0/2</code>
+    </div>
+  </section>
+
+  <section class="metric-grid section-shell" aria-label="Compiler product summary">
+    <article class="hara-surface metric"><strong>HBC</strong><span><code>HbcModule</code> · ABI <code>hbc0</code></span></article>
+    <article class="hara-surface metric"><strong>Wasm</strong><span><code>WholeWasm</code> · ABI <code>hnw0/2</code></span></article>
+    <article class="hara-surface metric"><strong>1</strong><span>canonical bytecode program before target packaging</span></article>
+    <article class="hara-surface metric"><strong>0</strong><span>tree-evaluator fallback calls emitted by the bytecode compiler</span></article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Pipeline</p>
+      <h2>Compilation starts with source-positioned forms.</h2>
+      <p>The compiler reads source with parser spans intact. Multiple top-level forms are treated as an implicit <code>do</code>. Namespace declarations are prepared before lowering, then aliases and exclusions are rewritten against the selected namespace configuration.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/vm/compiler.rs"><span>Reader, namespace preparation, lowering</span><code>core/rust/src/vm/compiler.rs</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/vm.rs"><span>VM program and execution surface</span><code>core/rust/src/vm.rs</code></a>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Compiler stages">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">01 · Reader</p>
+      <h2>Source becomes <code>SpannedForm</code> trees.</h2>
+      <p><code>compile_source</code> calls the Hara reader and keeps source positions attached to the form tree. Diagnostics, source maps, and later validation therefore refer back to the original source rather than a text round trip.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">02 · Namespace configuration</p>
+      <h2>Aliases are resolved before bytecode lowering.</h2>
+      <p><code>ns</code> and <code>ns+</code> clauses produce a generated namespace configuration. The compiler rewrites forms against that configuration and synchronizes aliases with the runtime registry when compiling inside an existing session.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">03 · Bytecode compiler</p>
+      <h2>Forms lower directly into instructions and function prototypes.</h2>
+      <p>Lexical scopes, captures, loops, exception handlers, constants, globals, calls, destructuring and supported language forms are lowered into a <code>Program</code>. Unsupported language forms produce typed compile errors. They are not converted into fallback evaluator calls.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">04 · Validation</p>
+      <h2>The <code>Program</code> is checked before it becomes an artifact.</h2>
+      <p>The compiler finalizes source maps, validates bytecode structure and stack behaviour, and retains function/schema information used by runtime and conformance tooling.</p>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Canonical product</p>
+      <h2>HBC is the compiler's first durable artifact.</h2>
+      <p>The standalone compiler facade exposes <code>CompileTarget::HbcModule</code>. It compiles source to a validated program, encodes that program, and wraps the bytes in an immutable compiled-product manifest whose product kind is <code>HbcModule</code> and ABI is <code>hbc0</code>.</p>
+      <p>HBC can execute in the VM-only runtime without requiring the whole-Wasm compiler.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/compiler/src/lib.rs"><span>Public compiler facade and product identities</span><code>core/rust/compiler/src/lib.rs</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/java/src/main/java/hara/truffle/bytecode/HbcCodec.java"><span>JVM HBC codec</span><code>HbcCodec.java</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/runtime/bytecode.rs"><span>Runtime HBC integration</span><code>runtime/bytecode.rs</code></a>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Compiled product routes">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">HBC route</p>
+      <h2><code>HbcModule</code> · <code>hbc0</code></h2>
+      <p>Use this product when the host already provides the Hara bytecode VM. It is compact, deterministic, portable across VM hosts, and is the canonical program retained by higher-level compiled products.</p>
+      <dl class="detail-list">
+        <div><dt>Input</dt><dd><code>.hal</code> source</dd></div>
+        <div><dt>Product</dt><dd><code>HbcModule</code></dd></div>
+        <div><dt>ABI</dt><dd><code>hbc0</code></dd></div>
+        <div><dt>Execution</dt><dd>Hara VM</dd></div>
+      </dl>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Whole-Wasm route</p>
+      <h2><code>WholeWasm</code> · <code>hnw0/2</code></h2>
+      <p>The whole-Wasm target first produces the same HBC bytes, then packages the canonical program into the versioned whole-Wasm artifact. Decoding a whole-Wasm product yields the program whose re-encoded HBC matches the original HBC module.</p>
+      <dl class="detail-list">
+        <div><dt>Input</dt><dd>canonical HBC</dd></div>
+        <div><dt>Product</dt><dd><code>WholeWasm</code></dd></div>
+        <div><dt>ABI</dt><dd><code>hnw0/2</code></dd></div>
+        <div><dt>Execution</dt><dd>Whole-Wasm host</dd></div>
+      </dl>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Product identity</p>
+      <h2>Compiled outputs are content-addressed build products.</h2>
+      <p>Every compiler product records the source digest, compiler identity, ABI version, target kind, output bytes and the digest of its canonical HBC module input. The compiler cache key uses the same inputs, so two identical compilations can reuse the same immutable product rather than relying on process-local source state.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/compiler/src/lib.rs"><span>CompiledProduct and cache key use</span><code>hara-compiler</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/whole_wasm.rs"><span>Whole-Wasm encoding and decoding</span><code>whole_wasm.rs</code></a>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Compiler entry points">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Source entry point</p>
+      <h2><code>compile_source</code></h2>
+      <p>Reads ordinary Hara source, prepares namespaces, lowers supported forms and produces a validated VM program.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Registry-aware entry point</p>
+      <h2><code>compile_source_with</code></h2>
+      <p>Compiles against an existing namespace registry so already interned vars and runtime aliases are visible to the compiler in the same form they will have at execution.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Configured entry point</p>
+      <h2><code>compile_source_with_config</code></h2>
+      <p>Accepts an already resolved namespace configuration and applies source-positioned rewrites before lowering. Runtime sessions use this when namespace metadata has already been loaded.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">HALC entry point</p>
+      <h2><code>compile_halc_module</code></h2>
+      <p>Consumes decoded HALC directly. It removes the namespace declaration from executable code, preserves schema-definition and function-schema graphs on the resulting program, infers function types, and validates declared arities.</p>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Evaluator boundary</p>
+      <h2>The compiler and evaluator are separate execution strategies.</h2>
+      <p>Hara still has tree-evaluation surfaces for interactive and semantic runtime operations. The bytecode compiler does not use that evaluator as an escape hatch. A form that is outside the supported compiled language reports a compile error instead of emitting a structural-evaluation opcode or text round trip.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/vm/compiler.rs"><span>No-fallback compiler contract</span><code>vm/compiler.rs</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/runtime/evaluation.rs"><span>Runtime evaluation path</span><code>runtime/evaluation.rs</code></a>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Compiler and bindgen relationship">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Hara source compiler</p>
+      <h2><code>.hal</code> source → HBC → whole-Wasm</h2>
+      <p>This path owns Hara-language semantics. The durable semantic program is HBC, and whole-Wasm packages that program for a Wasm execution host.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Foreign-Wasm bindgen</p>
+      <h2><code>library.wasm + interface.hal</code> → binding package</h2>
+      <p>This sibling pipeline does not compile the foreign library from Hara source. It structurally inspects existing Wasm bytes and uses a semantic interface to generate <code>core.v1</code>, <code>memory.v1</code>, or <code>hta.v1</code> package metadata and optional adapters.</p>
+      <div class="detail-actions"><a class="button" href="/docs/wasm-bindings/">Wasm binding guide</a></div>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Example</p>
+      <h2>Keep source examples independent of a private compiler command.</h2>
+      <p>The checked-in compiler-stack example contains ordinary Hara source plus a product map. The public compiler API currently lives in the Rust compiler crate and browser runtime APIs; this guide intentionally does not invent a CLI command that the repository does not expose.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara-build/tree/main/examples/compiler-stack"><span>Compiler-stack example</span><code>examples/compiler-stack/</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/compiler/src/lib.rs"><span>Actual compile API</span><code>compile(source, CompileTarget)</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/web/packages/browser/src/index.js"><span>Browser compile surfaces</span><code>compileBytecode · compileWholeWasm</code></a>
+    </div>
+  </section>
+</AppLayout>

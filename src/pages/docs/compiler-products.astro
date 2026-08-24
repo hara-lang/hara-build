@@ -1,0 +1,108 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+---
+<AppLayout title="Compiled products — Hara Build" description="The immutable product manifest, formats, digests and cache keys used by Hara compiler targets and runtime hosts.">
+  <section class="page-heading section-shell">
+    <p class="hara-kicker">Compiled products</p>
+    <h1>Compiler outputs carry their own identity.</h1>
+    <p>Hara does not treat compiled bytes as anonymous files. HBC modules, HBC packages and whole-Wasm artifacts share one immutable manifest contract so compiler targets, runtimes and browser hosts can verify exactly what they exchange.</p>
+    <div class="command" aria-label="Compiled product schema">
+      <span aria-hidden="true">↳</span>
+      <code>hara.compiled-product.manifest/0-alpha</code>
+    </div>
+  </section>
+
+  <section class="metric-grid section-shell" aria-label="Compiled formats">
+    <article class="hara-surface metric"><strong>HBC0</strong><span><code>hbc-module</code></span></article>
+    <article class="hara-surface metric"><strong>HBX0</strong><span><code>hbc-package</code></span></article>
+    <article class="hara-surface metric"><strong>HNW0</strong><span><code>whole-wasm</code></span></article>
+    <article class="hara-surface metric"><strong>SHA-256</strong><span>source, module, options and artifact identities</span></article>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Manifest fields">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Product identity</p>
+      <h2>Kind, format and ABI are separate.</h2>
+      <dl class="detail-list">
+        <div><dt>Product</dt><dd><code>hbc-module</code>, <code>hbc-package</code>, <code>whole-wasm</code></dd></div>
+        <div><dt>Format</dt><dd><code>HBC0</code>, <code>HBX0</code>, <code>HNW0</code></dd></div>
+        <div><dt>ABI</dt><dd>target-owned version such as <code>hbc0</code> or <code>hnw0/2</code></dd></div>
+        <div><dt>Compiler</dt><dd>versioned <code>compiler-id</code></dd></div>
+      </dl>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Inputs</p>
+      <h2>The manifest records what produced the bytes.</h2>
+      <dl class="detail-list">
+        <div><dt>Source</dt><dd><code>source-digest</code></dd></div>
+        <div><dt>Modules</dt><dd><code>module-digests</code></dd></div>
+        <div><dt>Options</dt><dd><code>options-digest</code></dd></div>
+        <div><dt>Compiler</dt><dd><code>compiler-id</code></dd></div>
+      </dl>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Output proof</p>
+      <h2>The bytes are self-verifiable.</h2>
+      <p><code>artifact-digest</code> and <code>artifact-bytes</code> are checked against the actual payload. A cache refuses a product whose recorded size or digest no longer matches its bytes.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Whole-Wasm additions</p>
+      <h2>Host-facing Wasm metadata is explicit.</h2>
+      <p>Whole-Wasm manifests additionally expose the stable <code>hara_entry</code> entrypoint, <code>hara_error</code> and <code>hara_heap</code> globals, and the <code>hara</code> import module expected by the host.</p>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Cache identity</p>
+      <h2>Reuse is a function of exact compiler inputs.</h2>
+      <p><code>ProductCacheKey</code> contains the product kind, source digest, module digests, compiler ID, ABI version and options digest. Two products with the same source bytes but different target kinds or module dependencies therefore occupy different cache identities.</p>
+    </div>
+    <div class="source-links">
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/compiled_product.rs"><span>Manifest, verification and cache key</span><code>core/rust/src/compiled_product.rs</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/compiler/src/lib.rs"><span>Compiler target construction</span><code>core/rust/compiler/src/lib.rs</code></a>
+    </div>
+  </section>
+
+  <section class="spec-detail-grid section-shell" aria-label="Product relationships">
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">HBC module</p>
+      <h2>The canonical compiled program.</h2>
+      <p>The ordinary source compiler produces <code>HbcModule</code> first. Its HBC bytes are executable by VM hosts and also become a recorded module dependency when the same source is packaged as whole-Wasm.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">HBC package</p>
+      <h2>A package product has its own format identity.</h2>
+      <p><code>HbcPackage</code> is represented as <code>HBX0</code> in the shared compiled-product layer. It is distinct from a single <code>HbcModule</code> even though both are bytecode-family products.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Whole-Wasm</p>
+      <h2>A Wasm host product built from HBC.</h2>
+      <p><code>WholeWasm</code> records the digest of its HBC module input. That provenance is what lets a build system prove that the Wasm artifact and the canonical Hara bytecode came from the same source compilation.</p>
+    </article>
+
+    <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Foreign Wasm package</p>
+      <h2>Bindgen uses a different product family.</h2>
+      <p>The Wasm binding generator packages an existing foreign <code>.wasm</code> module from a semantic interface. It does not turn that module into an HBC compiled product. Keep compiled Hara products and foreign-Wasm binding packages separate when reasoning about provenance.</p>
+      <div class="detail-actions"><a class="button" href="/docs/wasm-bindings/">Wasm binding guide</a></div>
+    </article>
+  </section>
+
+  <section class="section-shell source-panel">
+    <div>
+      <p class="hara-kicker">Read next</p>
+      <h2>Start with the compiler stack, then inspect product identity.</h2>
+      <p>The stack guide explains how source becomes HBC and whole-Wasm. This page explains the immutable manifest wrapped around those bytes.</p>
+    </div>
+    <div class="source-links">
+      <a href="/docs/compiler-stack/"><span>Source-language pipeline</span><code>Compiler stack</code></a>
+      <a href="https://github.com/hara-lang/hara/blob/main/core/rust/src/compiled_product.rs"><span>Authoritative implementation</span><code>CompiledProductManifest</code></a>
+    </div>
+  </section>
+</AppLayout>
