@@ -15,6 +15,7 @@ test("Build docs expose the current Hara compiler stack", async () => {
   const guide = await text("src/pages/docs/compiler-stack.astro");
 
   assert.match(index, /href="\/docs\/compiler-stack\/"/);
+  assert.match(index, /href="\/docs\/compiler-products\/"/);
 
   for (const token of [
     "HbcModule",
@@ -35,6 +36,34 @@ test("Build docs expose the current Hara compiler stack", async () => {
 
   assert.ok(guide.indexOf("HBC hbc0") < guide.indexOf("Whole Wasm hnw0/2"));
   assert.match(guide, /\/docs\/wasm-bindings\//);
+});
+
+test("compiled product docs retain manifest, format and cache identities", async () => {
+  const products = await text("src/pages/docs/compiler-products.astro");
+
+  for (const token of [
+    "hara.compiled-product.manifest/0-alpha",
+    "HBC0",
+    "HBX0",
+    "HNW0",
+    "hbc-module",
+    "hbc-package",
+    "whole-wasm",
+    "ProductCacheKey",
+    "source-digest",
+    "module-digests",
+    "options-digest",
+    "artifact-digest",
+    "artifact-bytes",
+    "hara_entry",
+    "hara_error",
+    "hara_heap"
+  ]) {
+    assert.ok(products.includes(token), `compiled product guide should contain ${token}`);
+  }
+
+  assert.match(products, /href="\/docs\/compiler-stack\/"/);
+  assert.match(products, /href="\/docs\/wasm-bindings\/"/);
 });
 
 test("compiler example remains ordinary Hara source with both product identities documented", async () => {
