@@ -1,0 +1,16 @@
+(wasm/interface
+ {:schema "hara.wasm-interface/0-alpha"
+  :namespace example.codec
+  :module "echo.wasm"
+  :memory {:export "memory" :allocate "alloc" :release "free"}
+  :exports
+  {echo {:wasm/export "echo_bytes"
+         :arguments [{:name input
+                      :hara/type :bytes
+                      :wasm/type :i32
+                      :lower [:pointer :length]
+                      :ownership :borrowed}]
+         :returns {:hara/type :bytes
+                   :wasm/type :i64
+                   :lift :packed-i64
+                   :ownership :caller}}}})
