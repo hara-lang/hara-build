@@ -1,19 +1,26 @@
 ---
 import AppLayout from "../../layouts/AppLayout.astro";
 ---
-<AppLayout title="Docs — Hara Build" description="Build-oriented documentation for Hara packages, runtimes, Wasm bindings, and executable standards.">
+<AppLayout title="Docs — Hara Build" description="Build-oriented documentation for Hara packages, runtimes, compiler products, Wasm bindings, and executable standards.">
   <section class="page-heading section-shell">
     <p class="hara-kicker">Build documentation</p>
     <h1>Build artifacts with explicit contracts.</h1>
-    <p>These guides cover the package and runtime boundaries used by Hara Build. Normative specifications remain in the specifications registry and implementation contracts remain with the owning repositories.</p>
+    <p>These guides cover the package, compiler, and runtime boundaries used by Hara Build. Normative specifications remain in the specifications registry and implementation contracts remain with the owning repositories.</p>
   </section>
 
   <section class="spec-detail-grid section-shell" aria-label="Documentation guides">
     <article class="hara-surface detail-panel">
+      <p class="hara-kicker">Compiler stack</p>
+      <h2>Follow Hara source from parsed forms to HBC and whole-Wasm products.</h2>
+      <p>Understand the reader, namespace rewrite, bytecode compiler, validated program, immutable compiled-product manifest, VM path, whole-Wasm wrapper, and the separate foreign-Wasm bindgen pipeline.</p>
+      <div class="detail-actions"><a class="button button-primary" href="/docs/compiler-stack/">Read the guide</a></div>
+    </article>
+
+    <article class="hara-surface detail-panel">
       <p class="hara-kicker">Wasm bindings</p>
       <h2>Bind an existing Wasm library from a semantic <code>.hal</code> interface.</h2>
       <p>Inspect raw exports, define Hara-visible types and ownership, generate a deterministic package, and choose the correct <code>core.v1</code>, <code>memory.v1</code>, or <code>hta.v1</code> route.</p>
-      <div class="detail-actions"><a class="button button-primary" href="/docs/wasm-bindings/">Read the guide</a></div>
+      <div class="detail-actions"><a class="button" href="/docs/wasm-bindings/">Read the guide</a></div>
     </article>
 
     <article class="hara-surface detail-panel">
@@ -48,7 +55,7 @@ import AppLayout from "../../layouts/AppLayout.astro";
       <p>Build documentation is descriptive. When a guide and a versioned specification disagree, use the versioned specification and report the documentation drift.</p>
     </div>
     <div class="source-links">
-      <a href="https://github.com/hara-lang/hara"><span>Runtime and bindgen implementation</span><code>hara-lang/hara</code></a>
+      <a href="https://github.com/hara-lang/hara"><span>Compiler, runtime, and bindgen implementation</span><code>hara-lang/hara</code></a>
       <a href="https://github.com/hara-lang/hara-specs-registry"><span>Normative specifications</span><code>hara-lang/hara-specs-registry</code></a>
       <a href="https://github.com/hara-lang/hara-build"><span>Build documentation source</span><code>hara-lang/hara-build</code></a>
     </div>
