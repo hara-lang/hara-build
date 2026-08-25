@@ -6,5 +6,10 @@ export default defineConfig({
   trailingSlash: "never",
   build: {
     format: "directory"
+  },
+  vite: {
+    resolve: {
+      preserveSymlinks: true
+    }
   }
 });

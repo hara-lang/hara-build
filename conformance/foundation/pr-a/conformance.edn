@@ -1,0 +1,31 @@
+{:accounting {:discovered 1
+              :emitted 1
+              :manual-review 0
+              :skipped 0
+              :complete? true}
+ :cases [{:foundation {:expected false
+                       :expected/present true
+                       :reason nil
+                       :source-expression nil
+                       :status :emitted}
+          :id "pr-a/synthetic#0"
+          :review {:status :unreviewed}
+          :source {:location {:form-index 0}
+                   :namespace "synthetic.foundation-test"
+                   :path "test/synthetic/foundation_test.clj"
+                   :repository "zcaudate-xyz/foundation-base"
+                   :revision "f55f39855d5e9ea1b22f1d116df684c584323f80"
+                   :tree "3beb10f32e7d57139910ee9c9de1370e966ca935"}
+          :target {:expression "(synthetic-example)"
+                   :namespace "synthetic.example"}}]
+ :corpus/status :unreviewed-source-evidence
+ :document/type :hara-foundation-conformance
+ :document/version 1
+ :family/id :pr-a/synthetic
+ :family/name "pr-a/synthetic"
+ :foundation/repository "zcaudate-xyz/foundation-base"
+ :foundation/revision "f55f39855d5e9ea1b22f1d116df684c584323f80"
+ :foundation/tree "3beb10f32e7d57139910ee9c9de1370e966ca935"
+ :hara/repository "hara-lang/hara"
+ :hara/revision "fd382c506348c1e96412e7398ac4cba7029b7885"
+ :output/path "conformance/foundation/pr-a/conformance.edn"}
