@@ -32,7 +32,7 @@ test("pins and consumes the accepted shared v2 shell contract", () => {
   }
   assert.match(layout, /@hara-lang\/ui\/v2\.css/);
   assert.match(layout, /body class="hara-v2 build-product"/);
-  assert.match(layout, /<Shell sidebar=\{false\} aside=\{false\} mainId="content" class="build-v2-shell">/);
+  assert.match(layout, /<Shell[\s\S]*sidebar=\{false\}[\s\S]*aside=\{false\}[\s\S]*mainId="content"[\s\S]*class="build-v2-shell"/);
 });
 
 test("keeps ecosystem and workflow destinations distinct and ordered", () => {

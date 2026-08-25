@@ -61,7 +61,14 @@ const workflowNav = [
   </head>
   <body class="hara-v2 build-product">
     <a class="skip-link" href="#content">Skip to content</a>
-    <Shell sidebar={false} aside={false} mainId="content" class="build-v2-shell">
+    <Shell
+      sidebar={false}
+      aside={false}
+      variant="product"
+      mainId="content"
+      class="build-v2-shell"
+      style="--hara-v2-page: clamp(16px, 2.6vw, 40px);"
+    >
       <Header
         slot="header"
         homeHref="https://hara-lang.org/"
