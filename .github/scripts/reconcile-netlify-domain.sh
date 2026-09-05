@@ -52,10 +52,10 @@ fi
 curl --silent --show-error -X POST -H "$auth" "$api/ssl" >/dev/null || true
 
 site="$(curl --fail --silent --show-error -H "$auth" "$api")"
-jq -e --arg domain "$NETLIFY_CUSTOM_DOMAIN" --arg legacy "$NETLIFY_LEGACY_DOMAIN" '
-  .custom_domain == $domain
-  and (.domain_aliases // []) | index($legacy) != null
-  and .force_ssl == true
+'jq -e --arg domain "$NETLIFY_CUSTOM_DOMAIN" --arg legacy "$NETLIFY_LEGACY_DOMAIN" '
+  (.custom_domain == $domain)
+  and ((.domain_aliases // []) | index($legacy) != null)
+  and (.force_ssl == true)
 ' <<<"$site" >/dev/null || {
   echo "Netlify did not retain the Build domain, legacy alias, and SSL policy." >&2
   exit 1
