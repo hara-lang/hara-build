@@ -28,6 +28,18 @@ jobs:
         with:
           node-version: 24
 
+      - name: Checkout shared Hara UI package
+        uses: actions/checkout@v4
+        with:
+          repository: hara-lang/hara-ui
+          ref: main
+          path: technology/hara-ui
+
+      - name: Expose shared UI package for npm file dependencies
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/../../technology"
+          ln -sfn "$GITHUB_WORKSPACE/technology/hara-ui" "$GITHUB_WORKSPACE/../../technology/hara-ui"
+
       - name: Install dependencies
         run: npm install
 
@@ -42,21 +54,21 @@ jobs:
         run: npx --yes netlify-cli deploy --prod --dir dist --message "testing ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.HARA_NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.HARA_BUILD_NETLIFY_TESTING_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
 
       - name: Deploy main to build.hara-lang.org
         if: github.ref_name == 'main'
         run: npx --yes netlify-cli deploy --prod --dir dist --message "main ${GITHUB_SHA}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.HARA_NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.HARA_BUILD_NETLIFY_PRODUCTION_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
 
       - name: Reconcile testing Build domain
         if: github.ref_name == 'testing'
         run: bash .github/scripts/reconcile-netlify-domain.sh
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.HARA_NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.HARA_BUILD_NETLIFY_TESTING_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTING_SITE_ID }}
           NETLIFY_CUSTOM_DOMAIN: build.testing.hara-lang.org
           NETLIFY_LEGACY_DOMAIN: specs.testing.hara-lang.org
 
@@ -65,6 +77,6 @@ jobs:
         run: bash .github/scripts/reconcile-netlify-domain.sh
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.HARA_NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.HARA_BUILD_NETLIFY_PRODUCTION_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
           NETLIFY_CUSTOM_DOMAIN: build.hara-lang.org
           NETLIFY_LEGACY_DOMAIN: specs.hara-lang.org
